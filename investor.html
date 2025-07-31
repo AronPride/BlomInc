@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investor Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f5f5; text-align: center; padding: 50px; }
+    .box { background: white; padding: 30px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    button { padding: 10px 20px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Welcome to the Investor Dashboard</h2>
+    <p>✅ Access exclusive investor materials below:</p>
+    <ul style="text-align:left; display:inline-block;">
+      <li><a href="deck.pdf" target="_blank">📄 Pitch Deck</a></li>
+      <li><a href="update-july.pdf" target="_blank">📄 July 2025 Investor Update</a></li>
+      <li><a href="financials.pdf" target="_blank">📄 Financial Model</a></li>
+    </ul>
+    <br><br>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    // Redirect back to login if not "logged in"
+    if (sessionStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+
+    function logout() {
+      sessionStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>
