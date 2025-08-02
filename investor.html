@@ -1,38 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Investor Dashboard</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; text-align: center; padding: 50px; }
-    .box { background: white; padding: 30px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    button { padding: 10px 20px; cursor: pointer; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Flow Analysis</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="box">
-    <h2>Welcome to the Investor Dashboard</h2>
-    <p>✅ Access exclusive investor materials below:</p>
-    <ul style="text-align:left; display:inline-block;">
-      <li><a href="deck.pdf" target="_blank">📄 Pitch Deck</a></li>
-      <li><a href="update-july.pdf" target="_blank">📄 July 2025 Investor Update</a></li>
-      <li><a href="financials.pdf" target="_blank">📄 Financial Model</a></li>
-    </ul>
-    <br><br>
-    <button onclick="logout()">Logout</button>
-  </div>
+    <div class="container">
+        <h1>Cash Flow Analysis</h1>
 
-  <script>
-    // Redirect back to login if not "logged in"
-    if (sessionStorage.getItem("loggedIn") !== "true") {
-      window.location.href = "login.html";
-    }
+        <div class="input-section">
+            <h2>Financial Inputs</h2>
+            <div class="input-group">
+                <label for="initialCash">Initial Cash ($):</label>
+                <input type="number" id="initialCash" value="3200000">
+            </div>
+            <div class="input-group">
+                <label for="cannabisAnnualRevenue">Cannabis Annual Revenue ($):</label>
+                <input type="number" id="cannabisAnnualRevenue" value="6700000">
+            </div>
+            <div class="input-group">
+                <label for="retailAnnualRevenue">Retail Annual Revenue ($):</label>
+                <input type="number" id="retailAnnualRevenue" value="4000000">
+            </div>
+            <div class="input-group">
+                <label for="timeUntilRetailRevenue">Time until Retail Revenue (months):</label>
+                <input type="number" id="timeUntilRetailRevenue" value="8">
+            </div>
+            <button id="updateGraph">Update Graph</button>
+        </div>
 
-    function logout() {
-      sessionStorage.removeItem("loggedIn");
-      window.location.href = "login.html";
-    }
-  </script>
+        <div class="chart-section">
+            <h2>Cash Balance Over Time</h2>
+            <canvas id="cashFlowChart"></canvas>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
