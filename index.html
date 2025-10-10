@@ -1,45 +1,98 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Investor Login</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; text-align: center; padding: 50px; }
-    .login-box { background: white; padding: 30px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    input { display: block; margin: 10px auto; padding: 10px; width: 200px; }
-    button { padding: 10px 20px; cursor: pointer; }
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BLOM — Coming Soon</title>
+  <meta name="description" content="BLOM is coming soon to Minnesota. Sign up for launch updates." />
+  <meta property="og:title" content="BLOM — Coming Soon" />
+  <meta property="og:description" content="Minnesota‑grown. Coming soon." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="LogoMark.jpg" />
+  <meta name="theme-color" content="#fff6ff" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google tag (GA4 & Google Ads) -->
+  <!-- Replace G-XXXXXXXXXX with your GA4 Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
 </head>
-<body>
-  <div class="login-box">
-    <h2>Investor Portal Login</h2>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
-    <p id="error" style="color:red;"></p>
-  </div>
+<body class="bg-[#fff6ff] text-gray-900 font-inter min-h-screen flex flex-col justify-between">
+
+  <!-- Hero -->
+  <main class="flex-grow flex items-center justify-center px-6 py-20">
+    <div class="text-center">
+      <img src="Blom Logomark.png" alt="BLOM" class="mx-auto w-64 md:w-80">
+      <p class="mt-8 text-2xl md:text-3xl font-semibold tracking-tight text-gray-800">Coming Soon</p>
+      <p class="mt-4 text-gray-600">Minnesota‑grown. Sign up for updates.</p>
+
+      <!-- Begin Mailchimp Signup (cleaned) -->
+      <div id="mc_embed_signup">
+        <form
+          action="https://blomn.us18.list-manage.com/subscribe/post?u=b3ce9b1b82dee829faff54aaf&amp;id=fe086f8a79&amp;f_id=00a8b2e6f0"
+          method="post"
+          id="mc-embedded-subscribe-form"
+          name="mc-embedded-subscribe-form"
+          class="validate max-w-md mx-auto mt-8 flex flex-col gap-4"
+          target="_blank"
+          novalidate>
+
+          <label for="mce-EMAIL" class="text-gray-700 font-medium">
+            Email Address <span class="text-pink-500">*</span>
+          </label>
+          <input type="email" name="EMAIL" class="required email rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400" id="mce-EMAIL" required placeholder="you@example.com" value="" />
+
+          <!-- Response messages -->
+          <div id="mce-responses" class="text-sm">
+            <div class="response text-red-600" id="mce-error-response" style="display:none;"></div>
+            <div class="response text-green-600" id="mce-success-response" style="display:none;"></div>
+          </div>
+
+          <!-- Honeypot (do not remove) -->
+          <div aria-hidden="true" style="position:absolute; left:-5000px;">
+            <input type="text" name="b_b3ce9b1b82dee829faff54aaf_fe086f8a79" tabindex="-1" value="">
+          </div>
+
+          <div class="optionalParent">
+            <div class="clear foot flex items-center gap-3 justify-center">
+              <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="button rounded-lg bg-pink-500 text-white px-6 py-2 font-medium hover:bg-pink-600 cursor-pointer" value="Notify me">
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- End Mailchimp Signup -->
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-6 text-center text-sm text-gray-500 border-t border-gray-200">
+    © <span id="year"></span> Blom Inc. All rights reserved.
+  </footer>
 
   <script>
-    function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 
-      // Hardcoded "accounts" (you can add more)
-      const users = [
-        { email: "investor@example.com", password: "letmein" },
-        { email: "vip@example.com", password: "secret" }
-      ];
-
-      const match = users.find(u => u.email === email && u.password === password);
-
-      if (match) {
-        sessionStorage.setItem("loggedIn", "true");
-        window.location.href = "investor.html";
-      } else {
-        document.getElementById("error").textContent = "Invalid login. Try again.";
-      }
-    }
+  <!-- Mailchimp validation (keep this once per page, below the form) -->
+  <script src="//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    (function($) {
+      window.fnames = []; window.ftypes = [];
+      fnames[0] = 'EMAIL';  ftypes[0] = 'email';
+      fnames[1] = 'FNAME';  ftypes[1] = 'text';
+      fnames[2] = 'LNAME';  ftypes[2] = 'text';
+    }(jQuery));
+    var $mcj = jQuery.noConflict(true);
   </script>
 </body>
 </html>
