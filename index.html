@@ -3,18 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BLOM — Coming Soon</title>
-  <meta name="description" content="BLOM is coming soon to Minnesota. Sign up for launch updates." />
-  <meta property="og:title" content="BLOM — Coming Soon" />
-  <meta property="og:description" content="Minnesota‑grown. Coming soon." />
+  <title>BLOM | Minnesota-Grown Craft</title>
+  <meta name="description" content="Blom is the Old Norse word for flower. Minnesota-grown craft, rooted in seasonality and cultivation." />
+  <meta property="og:title" content="BLOM | Minnesota-Grown Craft" />
+  <meta property="og:description" content="Rooted in growth, seasonality, and the patience of cultivation. Minnesota-grown." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="LogoMark.jpg" />
+  <meta property="og:image" content="Log Mark.png" />
   <meta name="theme-color" content="#fff6ff" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="css/style.css">
 
   <!-- Google tag (GA4 & Google Ads) -->
   <!-- Replace G-XXXXXXXXXX with your GA4 Measurement ID -->
@@ -26,14 +23,89 @@
     gtag('config', 'G-XXXXXXXXXX');
   </script>
 </head>
-<body class="bg-[#fff6ff] text-gray-900 font-inter min-h-screen flex flex-col justify-between">
+<body>
+
+  <!-- Navigation -->
+  <nav class="site-nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <div class="logo">
+        <a href="#home">
+          <img src="Log Mark.png" alt="BLOM" class="nav-logo" width="240" height="64">
+        </a>
+      </div>
+      <button class="hamburger" id="hamburger" type="button" aria-label="Toggle menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul id="navLinks">
+        <li><a href="#home">Home</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#team">Team</a></li>
+        <li><a href="#updates">Updates</a></li>
+      </ul>
+    </div>
+  </nav>
 
   <!-- Hero -->
-  <main class="flex-grow flex items-center justify-center px-6 py-20">
-    <div class="text-center">
-      <img src="Blom Logomark.png" alt="BLOM" class="mx-auto w-64 md:w-80">
-      <p class="mt-8 text-2xl md:text-3xl font-semibold tracking-tight text-gray-800">Coming Soon</p>
-      <p class="mt-4 text-gray-600">Minnesota‑grown. Sign up for updates.</p>
+  <section id="home" class="hero reveal-section">
+    <div class="hero-canvas-wrap" id="rd-canvas-container" aria-hidden="true">
+      <canvas id="canvas"></canvas>
+    </div>
+    <div class="hero-content">
+      <p class="hero-tagline">Grow with Us.</p>
+      <a href="#updates" class="btn-primary">Get updates</a>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="reveal-section section-block">
+    <div class="section-inner section-inner--narrow">
+      <h2 class="section-heading">Blóm is the Old Norse word for flower.</h2>
+        <p class="about-lead">
+        Our name is inspired by Nordic heritage, craftsmanship, and our reverence for the flowers and plants that have enriched human life for generations.
+      </p>
+      <p class="body-text">
+        Founded in Minnesota, Blom combines scientific rigor, disciplined cultivation, and thoughtful manufacturing to produce cannabis of exceptional quality and consistency. Every detail, from genetics and environment to harvest and processing, is approached with the precision of an engineer and the care of a grower.
+      </p>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section id="team" class="reveal-section section-block section-block--alt">
+    <div class="section-inner section-inner--team">
+      <h2 class="section-heading">Our Executive Leadership</h2>
+      <div class="team-grid">
+        <article class="team-card">
+          <h3>E. Aaron Cohen, MBA</h3>
+          <p class="team-role">Co-Founder &amp; CEO</p>
+          <p>
+            A builder with deep experience in regulated product development. Aaron brings an engineer’s discipline to Blom’s vision: data driven, consistent quality, and transparent processes.
+          </p>
+        </article>
+        <article class="team-card">
+          <h3>Martin Stern</h3>
+          <p class="team-role">Co-Founder &amp; COO</p>
+          <p>
+            Martin is an operator who turns strategy into execution. With experience founding and scaling businesses, he leads day-to-day operations across cultivation, production, and retail—building the systems, teams, and discipline required to grow.
+          </p>
+        </article>
+        <article class="team-card">
+          <h3>Heidi Cohen, DVM, MPH</h3>
+          <p class="team-role">Co-Founder &amp; CAO</p>
+          <p>
+            The steady hand behind how Blom runs. Heidi shapes the systems, standards, and compliance culture that let a fast-moving company stay accountable, auditable, and built for the long term.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Updates -->
+  <section id="updates" class="reveal-section section-block">
+    <div class="section-inner section-inner--form">
+      <h2 class="section-heading">Stay in the loop</h2>
+      <p class="section-intro">Sign up for launch updates from Minnesota.</p>
 
       <!-- Begin Mailchimp Signup (cleaned) -->
       <div id="mc_embed_signup">
@@ -42,49 +114,98 @@
           method="post"
           id="mc-embedded-subscribe-form"
           name="mc-embedded-subscribe-form"
-          class="validate max-w-md mx-auto mt-8 flex flex-col gap-4"
+          class="validate signup-form"
           target="_blank"
           novalidate>
 
-          <label for="mce-EMAIL" class="text-gray-700 font-medium">
-            Email Address <span class="text-pink-500">*</span>
+          <label for="mce-EMAIL" class="form-label">
+            Email Address <span class="required-mark">*</span>
           </label>
-          <input type="email" name="EMAIL" class="required email rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400" id="mce-EMAIL" required placeholder="you@example.com" value="" />
+          <input type="email" name="EMAIL" class="required email form-input" id="mce-EMAIL" required placeholder="you@example.com" value="" />
 
-          <!-- Response messages -->
-          <div id="mce-responses" class="text-sm">
-            <div class="response text-red-600" id="mce-error-response" style="display:none;"></div>
-            <div class="response text-green-600" id="mce-success-response" style="display:none;"></div>
+          <div id="mce-responses" class="form-responses">
+            <div class="response form-error" id="mce-error-response" style="display:none;"></div>
+            <div class="response form-success" id="mce-success-response" style="display:none;"></div>
           </div>
 
-          <!-- Honeypot (do not remove) -->
           <div aria-hidden="true" style="position:absolute; left:-5000px;">
             <input type="text" name="b_b3ce9b1b82dee829faff54aaf_fe086f8a79" tabindex="-1" value="">
           </div>
 
           <div class="optionalParent">
-            <div class="clear foot flex items-center gap-3 justify-center">
-              <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="button rounded-lg bg-pink-500 text-white px-6 py-2 font-medium hover:bg-pink-600 cursor-pointer" value="Notify me">
+            <div class="clear foot">
+              <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="button btn-primary btn-primary--full" value="Notify me">
             </div>
           </div>
         </form>
       </div>
       <!-- End Mailchimp Signup -->
-
     </div>
-  </main>
+  </section>
 
   <!-- Footer -->
-  <footer class="py-6 text-center text-sm text-gray-500 border-t border-gray-200">
-    © <span id="year"></span> Blom Inc. All rights reserved.
+  <footer class="site-footer">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <a href="#home" class="footer-logo-link">
+          <img src="assets/blomskii-logo.png" alt="Blomskii" class="footer-logo" width="160" height="160">
+        </a>
+        <p class="footer-tagline">Rooted in Nordic Heritage. Built with Scientific Rigor.</p>
+        <p class="footer-location">Chaska,<span class="footer-location-sep">&nbsp;</span>Minnesota</p>
+      </div>
+
+      <div class="footer-columns">
+        <nav class="footer-col" aria-label="Footer navigation">
+          <h3 class="footer-col-heading">Navigation</h3>
+          <ul class="footer-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#team">Team</a></li>
+            <li><a href="#updates">Updates</a></li>
+          </ul>
+        </nav>
+
+        <div class="footer-col">
+          <h3 class="footer-col-heading">Connect</h3>
+          <ul class="footer-links">
+            <li><a href="#updates">Get updates</a></li>
+            <li><a href="mailto:info@blom.inc">info@blom.inc</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h3 class="footer-col-heading">Follow</h3>
+          <ul class="footer-social">
+            <li>
+              <a href="https://www.instagram.com/blom_inc/" target="_blank" rel="noopener noreferrer">
+                <svg class="footer-social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.974.974 1.246 2.241 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.974.974-2.241 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.974-.974-1.246-2.241-1.308-3.608C2.175 15.747 2.163 15.367 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.974-.974 2.241-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0 1.622c-3.16 0-3.534.012-4.773.069-1.026.047-1.585.218-1.956.363-.492.191-.843.42-1.212.789-.369.369-.598.72-.789 1.212-.145.371-.316.93-.363 1.956-.057 1.239-.069 1.613-.069 4.773s.012 3.534.069 4.773c.047 1.026.218 1.585.363 1.956.191.492.42.843.789 1.212.369.369.72.598 1.212.789.371.145.93.316 1.956.363 1.239.057 1.613.069 4.773.069s3.534-.012 4.773-.069c1.026-.047 1.585-.218 1.956-.363.492-.191.843-.42 1.212-.789.369-.369.598-.72.789-1.212.145-.371.316-.93.363-1.956.057-1.239.069-1.613.069-4.773s-.012-3.534-.069-4.773c-.047-1.026-.218-1.585-.363-1.956-.191-.492-.42-.843-.789-1.212-.369-.369-.72-.598-1.212-.789-.371-.145-.93-.316-1.956-.363-1.239-.057-1.613-.069-4.773-.069zm0 3.351a5.864 5.864 0 1 0 0 11.728 5.864 5.864 0 0 0 0-11.728zm0 1.622a4.242 4.242 0 1 1 0 8.484 4.242 4.242 0 0 1 0-8.484zm6.406-4.465a1.372 1.372 0 1 0 0 2.744 1.372 1.372 0 0 0 0-2.744z"/></svg>
+                Instagram
+              </a>
+            </li>
+            <li>
+              <a href="https://www.linkedin.com/company/blom-inc/" target="_blank" rel="noopener noreferrer">
+                <svg class="footer-social-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.114 20.452H3.56V9h3.554v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                LinkedIn
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; <span id="year"></span> Blom Inc. All rights reserved.</p>
+      <p class="footer-bottom-tag">Chaska,<span class="footer-location-sep">&nbsp;</span>Minnesota</p>
+    </div>
   </footer>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <button id="scrollTopBtn" type="button" title="Back to top" aria-label="Back to top">&#8679;</button>
+
+  <script src="js/main.js"></script>
+  <script src="js/simulation.js"></script>
 
   <!-- Mailchimp validation (keep this once per page, below the form) -->
-  <script src="//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js" type="text/javascript"></script>
+  <script src="https://s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js" type="text/javascript"></script>
   <script type="text/javascript">
     (function($) {
       window.fnames = []; window.ftypes = [];
