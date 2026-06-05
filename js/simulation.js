@@ -9,7 +9,7 @@ const KILL_MAX = 0.08;
 const GRADIENT_MODE = 4;
 const PASSES = 25;
 const SINE_SPEED = 0.72;
-const TARGET_FPS = 45;
+const TARGET_FPS = 60;
 
 const VERT_SRC = `#version 300 es
 in vec2 a_pos;
@@ -163,22 +163,88 @@ function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 function rand(lo, hi) { return lo + Math.random() * (hi - lo); }
 function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
+function floatToHalf(val) {
+  const f = new Float32Array(1);
+  const i = new Int32Array(f.buffer);
+  f[0] = val;
+  const x = i[0];
+  const sign = (x >> 16) & 0x8000;
+  let mant = (x >> 12) & 0x07ff;
+  let exp = (x >> 23) & 0xff;
+  if (exp < 103) return sign;
+  if (exp > 142) {
+    return sign | 0x7c00 | ((exp === 255) ? ((x & 0x007fffff) ? 0x0200 : 0) : 0);
+  }
+  if (exp < 113) {
+    mant |= 0x0800;
+    mant >>= (114 - exp);
+    exp = 0;
+  } else {
+    exp -= 112;
+  }
+  return sign | (exp << 10) | (mant >> 1);
+}
+
+function probeFramebufferFormat(gl, internalFormat, texType) {
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, 4, 4, 0, gl.RGBA, texType, null);
+  const fbo = gl.createFramebuffer();
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  const ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  gl.deleteFramebuffer(fbo);
+  gl.deleteTexture(tex);
+  return ok;
+}
+
+function chooseTextureFormat(gl) {
+  const hasFloat = !!gl.getExtension('EXT_color_buffer_float');
+  const hasHalf = !!gl.getExtension('EXT_color_buffer_half_float');
+  if (hasFloat && probeFramebufferFormat(gl, gl.RGBA32F, gl.FLOAT)) {
+    return { internal: gl.RGBA32F, uploadType: gl.FLOAT, useHalf: false };
+  }
+  if (hasHalf && probeFramebufferFormat(gl, gl.RGBA16F, gl.HALF_FLOAT)) {
+    return { internal: gl.RGBA16F, uploadType: gl.HALF_FLOAT, useHalf: true };
+  }
+  if (probeFramebufferFormat(gl, gl.RGBA16F, gl.HALF_FLOAT)) {
+    gl.getExtension('EXT_color_buffer_half_float');
+    return { internal: gl.RGBA16F, uploadType: gl.HALF_FLOAT, useHalf: true };
+  }
+  throw new Error('Float render targets unavailable on this GPU');
+}
+
+function createWebGL2Context(canvas) {
+  const base = { alpha: false, antialias: false, depth: false, stencil: false };
+  const tries = [
+    { ...base, powerPreference: 'high-performance' },
+    base,
+    { alpha: false }
+  ];
+  for (const attrs of tries) {
+    const gl = canvas.getContext('webgl2', attrs);
+    if (gl) return gl;
+  }
+  return null;
+}
+
 class ReactionDiffusion {
   constructor(canvas) {
     this.canvas = canvas;
-    this.gl = canvas.getContext('webgl2', {
-      alpha: false, antialias: false, depth: false, stencil: false,
-      powerPreference: 'high-performance', desynchronized: true
-    });
+    this.gl = createWebGL2Context(canvas);
     if (!this.gl) throw new Error('WebGL2 required');
 
     const gl = this.gl;
-    this.useHalf = !!gl.getExtension('EXT_color_buffer_half_float');
-    if (!gl.getExtension('EXT_color_buffer_float') && !this.useHalf) {
-      console.warn('Float render targets may be unavailable on this GPU');
-    }
-    this.texInternal = this.useHalf ? gl.RGBA16F : gl.RGBA32F;
-    this.texType = this.useHalf ? gl.HALF_FLOAT : gl.FLOAT;
+    const fmt = chooseTextureFormat(gl);
+    this.useHalf = fmt.useHalf;
+    this.texInternal = fmt.internal;
+    this.texType = fmt.uploadType;
+    this.halfUploadBuffer = null;
 
     this.progGrayScott = createProgram(gl, VERT_SRC, GRAYSCOTT_FRAG);
     this.progKF = createProgram(gl, VERT_SRC, KF_FRAG);
@@ -262,6 +328,10 @@ class ReactionDiffusion {
     const fbo = gl.createFramebuffer();
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    if (status !== gl.FRAMEBUFFER_COMPLETE) {
+      throw new Error('Framebuffer incomplete: 0x' + status.toString(16));
+    }
     return fbo;
   }
 
@@ -269,8 +339,17 @@ class ReactionDiffusion {
     const gl = this.gl;
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    // Client uploads must use FLOAT; HALF_FLOAT expects Uint16 data and corrupts seed values.
-    gl.texImage2D(gl.TEXTURE_2D, 0, this.texInternal, SIM_W, SIM_H, 0, gl.RGBA, gl.FLOAT, data);
+    if (this.useHalf) {
+      if (!this.halfUploadBuffer || this.halfUploadBuffer.length !== data.length) {
+        this.halfUploadBuffer = new Uint16Array(data.length);
+      }
+      for (let i = 0; i < data.length; i++) {
+        this.halfUploadBuffer[i] = floatToHalf(data[i]);
+      }
+      gl.texImage2D(gl.TEXTURE_2D, 0, this.texInternal, SIM_W, SIM_H, 0, gl.RGBA, gl.HALF_FLOAT, this.halfUploadBuffer);
+    } else {
+      gl.texImage2D(gl.TEXTURE_2D, 0, this.texInternal, SIM_W, SIM_H, 0, gl.RGBA, gl.FLOAT, data);
+    }
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
   }
 
@@ -314,7 +393,14 @@ class ReactionDiffusion {
   async loadLogo(url) {
     const img = new Image();
     img.src = url;
-    await img.decode();
+    if (img.decode) {
+      await img.decode();
+    } else {
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = () => reject(new Error('Logo failed to load: ' + url));
+      });
+    }
     const canvas = document.createElement('canvas');
     canvas.width = SIM_W;
     canvas.height = SIM_H;
@@ -632,9 +718,14 @@ window.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  const sim = new ReactionDiffusion(canvas);
-  sim.init().catch(err => {
+  try {
+    const sim = new ReactionDiffusion(canvas);
+    sim.init().catch(err => {
+      console.error('[Blom RD]', err);
+      if (container) container.classList.add('rd-fallback');
+    });
+  } catch (err) {
     console.error('[Blom RD]', err);
     if (container) container.classList.add('rd-fallback');
-  });
+  }
 });
