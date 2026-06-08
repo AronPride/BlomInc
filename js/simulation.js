@@ -1,5 +1,6 @@
 /**
  * BLOM website: Gray-Scott reaction diffusion (WebGL2, optimized)
+ * Copyright Blom Inc, 2026
  */
 
 const SIM_W = 1200;
