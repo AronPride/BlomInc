@@ -1,6 +1,5 @@
 /**
  * BLOM website: Gray-Scott reaction diffusion (WebGL2, optimized)
- * Copyright Blom Inc, 2026
  */
 
 const SIM_W = 1200;
@@ -12,13 +11,9 @@ const PASSES = 25;
 const SINE_SPEED = 0.72;
 const TARGET_FPS = 60;
 
-const VERT_SRC = `#version 300 es
-in vec2 a_pos;
-out vec2 v_uv;
-void main() {
-  v_uv = a_pos * 0.5 + 0.5;
-  gl_Position = vec4(a_pos, 0.0, 1.0);
-}`;
+const VERT_SRC = BlomWebGL.VERT_SRC;
+const createProgram = (gl, vs, fs) => BlomWebGL.createProgram(gl, vs, fs);
+const cacheUniforms = (gl, prog, names) => BlomWebGL.cacheUniforms(gl, prog, names);
 
 // Stripped: no FBM noise path (dA_noise_amp is always 0)
 const GRAYSCOTT_FRAG = `#version 300 es
@@ -125,34 +120,6 @@ void main() {
   fragColor = (dot(d, d) <= 1.0) ? stampColor : val;
 }`;
 
-function compileShader(gl, type, src) {
-  const sh = gl.createShader(type);
-  gl.shaderSource(sh, src);
-  gl.compileShader(sh);
-  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-    throw new Error(gl.getShaderInfoLog(sh));
-  }
-  return sh;
-}
-
-function createProgram(gl, vsSrc, fsSrc) {
-  const prog = gl.createProgram();
-  gl.attachShader(prog, compileShader(gl, gl.VERTEX_SHADER, vsSrc));
-  gl.attachShader(prog, compileShader(gl, gl.FRAGMENT_SHADER, fsSrc));
-  gl.linkProgram(prog);
-  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
-    throw new Error(gl.getProgramInfoLog(prog));
-  }
-  return prog;
-}
-
-function cacheUniforms(gl, prog, names) {
-  const u = {};
-  gl.useProgram(prog);
-  for (const n of names) u[n] = gl.getUniformLocation(prog, n);
-  return u;
-}
-
 function crescentFK(t, kOff) {
   const F = 0.006 + (0.100 - 0.006) * t;
   const k = -7.91 * F * F + 1.025 * F + 0.0325 + kOff;
@@ -164,88 +131,15 @@ function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 function rand(lo, hi) { return lo + Math.random() * (hi - lo); }
 function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-function floatToHalf(val) {
-  const f = new Float32Array(1);
-  const i = new Int32Array(f.buffer);
-  f[0] = val;
-  const x = i[0];
-  const sign = (x >> 16) & 0x8000;
-  let mant = (x >> 12) & 0x07ff;
-  let exp = (x >> 23) & 0xff;
-  if (exp < 103) return sign;
-  if (exp > 142) {
-    return sign | 0x7c00 | ((exp === 255) ? ((x & 0x007fffff) ? 0x0200 : 0) : 0);
-  }
-  if (exp < 113) {
-    mant |= 0x0800;
-    mant >>= (114 - exp);
-    exp = 0;
-  } else {
-    exp -= 112;
-  }
-  return sign | (exp << 10) | (mant >> 1);
-}
-
-function probeFramebufferFormat(gl, internalFormat, texType) {
-  const tex = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, tex);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, 4, 4, 0, gl.RGBA, texType, null);
-  const fbo = gl.createFramebuffer();
-  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
-  const ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-  gl.deleteFramebuffer(fbo);
-  gl.deleteTexture(tex);
-  return ok;
-}
-
-function chooseTextureFormat(gl) {
-  const hasFloat = !!gl.getExtension('EXT_color_buffer_float');
-  const hasHalf = !!gl.getExtension('EXT_color_buffer_half_float');
-  if (hasFloat && probeFramebufferFormat(gl, gl.RGBA32F, gl.FLOAT)) {
-    return { internal: gl.RGBA32F, uploadType: gl.FLOAT, useHalf: false };
-  }
-  if (hasHalf && probeFramebufferFormat(gl, gl.RGBA16F, gl.HALF_FLOAT)) {
-    return { internal: gl.RGBA16F, uploadType: gl.HALF_FLOAT, useHalf: true };
-  }
-  if (probeFramebufferFormat(gl, gl.RGBA16F, gl.HALF_FLOAT)) {
-    gl.getExtension('EXT_color_buffer_half_float');
-    return { internal: gl.RGBA16F, uploadType: gl.HALF_FLOAT, useHalf: true };
-  }
-  throw new Error('Float render targets unavailable on this GPU');
-}
-
-function createWebGL2Context(canvas) {
-  const base = { alpha: false, antialias: false, depth: false, stencil: false };
-  const tries = [
-    { ...base, powerPreference: 'high-performance' },
-    base,
-    { alpha: false }
-  ];
-  for (const attrs of tries) {
-    const gl = canvas.getContext('webgl2', attrs);
-    if (gl) return gl;
-  }
-  return null;
-}
-
 class ReactionDiffusion {
   constructor(canvas) {
     this.canvas = canvas;
-    this.gl = createWebGL2Context(canvas);
+    this.gl = BlomWebGL.createWebGL2Context(canvas);
     if (!this.gl) throw new Error('WebGL2 required');
 
     const gl = this.gl;
-    const fmt = chooseTextureFormat(gl);
-    this.useHalf = fmt.useHalf;
-    this.texInternal = fmt.internal;
-    this.texType = fmt.uploadType;
-    this.halfUploadBuffer = null;
+    this.fmt = BlomWebGL.chooseTextureFormat(gl);
+    this.halfUploadRef = { buf: null };
 
     this.progGrayScott = createProgram(gl, VERT_SRC, GRAYSCOTT_FRAG);
     this.progKF = createProgram(gl, VERT_SRC, KF_FRAG);
@@ -260,18 +154,7 @@ class ReactionDiffusion {
     this.uRender = cacheUniforms(gl, this.progRender, ['tex']);
     this.uStamp = cacheUniforms(gl, this.progStamp, ['tex', 'center', 'radius', 'texSize', 'stampColor']);
 
-    const quad = new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]);
-    this.vao = gl.createVertexArray();
-    gl.bindVertexArray(this.vao);
-    const buf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-    gl.bufferData(gl.ARRAY_BUFFER, quad, gl.STATIC_DRAW);
-    for (const prog of [this.progGrayScott, this.progKF, this.progRender, this.progStamp]) {
-      gl.useProgram(prog);
-      const loc = gl.getAttribLocation(prog, 'a_pos');
-      gl.enableVertexAttribArray(loc);
-      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    }
+    this.vao = BlomWebGL.setupQuadVAO(gl, [this.progGrayScott, this.progKF, this.progRender, this.progStamp]);
 
     this.texA = this.createSimTexture();
     this.texB = this.createSimTexture();
@@ -313,45 +196,15 @@ class ReactionDiffusion {
   }
 
   createSimTexture() {
-    const gl = this.gl;
-    const tex = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texImage2D(gl.TEXTURE_2D, 0, this.texInternal, SIM_W, SIM_H, 0, gl.RGBA, this.texType, null);
-    return tex;
+    return BlomWebGL.createFloatTexture(this.gl, SIM_W, SIM_H, this.fmt);
   }
 
   createFBO(tex) {
-    const gl = this.gl;
-    const fbo = gl.createFramebuffer();
-    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
-    const status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-    if (status !== gl.FRAMEBUFFER_COMPLETE) {
-      throw new Error('Framebuffer incomplete: 0x' + status.toString(16));
-    }
-    return fbo;
+    return BlomWebGL.createFBO(this.gl, tex);
   }
 
   uploadFloatTex(tex, data) {
-    const gl = this.gl;
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    if (this.useHalf) {
-      if (!this.halfUploadBuffer || this.halfUploadBuffer.length !== data.length) {
-        this.halfUploadBuffer = new Uint16Array(data.length);
-      }
-      for (let i = 0; i < data.length; i++) {
-        this.halfUploadBuffer[i] = floatToHalf(data[i]);
-      }
-      gl.texImage2D(gl.TEXTURE_2D, 0, this.texInternal, SIM_W, SIM_H, 0, gl.RGBA, gl.HALF_FLOAT, this.halfUploadBuffer);
-    } else {
-      gl.texImage2D(gl.TEXTURE_2D, 0, this.texInternal, SIM_W, SIM_H, 0, gl.RGBA, gl.FLOAT, data);
-    }
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    BlomWebGL.uploadFloatTex(this.gl, tex, SIM_W, SIM_H, data, this.fmt, this.halfUploadRef);
   }
 
   uploadLogoMask(canvas) {
@@ -709,7 +562,7 @@ class ReactionDiffusion {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+function startHeroSimulation() {
   const container = document.getElementById('rd-canvas-container');
   const canvas = document.getElementById('canvas');
   if (!canvas) return;
@@ -728,5 +581,15 @@ window.addEventListener('DOMContentLoaded', () => {
   } catch (err) {
     console.error('[Blom RD]', err);
     if (container) container.classList.add('rd-fallback');
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.BlomAgeGate) {
+    window.BlomAgeGate.onVerified(startHeroSimulation);
+    return;
+  }
+  if (sessionStorage.getItem('blom-age-verified') === '1') {
+    startHeroSimulation();
   }
 });
