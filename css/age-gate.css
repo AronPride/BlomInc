@@ -1,0 +1,96 @@
+.age-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(255, 246, 255, 0.97);
+}
+
+.age-gate__panel {
+  max-width: 22rem;
+  width: 100%;
+  padding: 2rem 1.75rem;
+  text-align: center;
+  background: #fff6ff;
+  border: 1px solid #fce7f3;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 32px rgba(221, 96, 150, 0.12);
+}
+
+.age-gate__logo-wrap {
+  display: inline-block;
+  background: #fff6ff;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.age-gate__logo {
+  display: block;
+  height: 10rem;
+  width: auto;
+  margin: 0;
+}
+
+.age-gate__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #3a3638;
+}
+
+.age-gate__text {
+  margin: 0 0 1.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #6f6a6d;
+}
+
+.age-gate__actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.age-gate__btn {
+  flex: 1;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.age-gate__btn--yes {
+  border: none;
+  background: #DD6096;
+  color: #fff;
+}
+
+.age-gate__btn--yes:hover {
+  background: #c94f84;
+}
+
+.age-gate__btn--no {
+  background: transparent;
+  color: #DD6096;
+  border: 2px solid #DD6096;
+}
+
+.age-gate__denied {
+  margin: 1rem 0 0;
+  font-size: 0.875rem;
+  color: #b42318;
+}
+
+.age-gate__denied[hidden] {
+  display: none;
+}
+
+html.age-gate-open {
+  overflow: hidden;
+}
