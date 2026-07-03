@@ -8,10 +8,11 @@
   <meta property="og:title" content="BLOM | Minnesota-Grown Craft" />
   <meta property="og:description" content="Rooted in growth, seasonality, and the patience of cultivation. Minnesota-grown." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="Log Mark.png" />
+  <meta property="og:image" content="assets/blom-logo.png" />
   <meta name="theme-color" content="#fff6ff" />
 
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/age-gate.css">
 
   <!-- Google tag (GA4 & Google Ads) -->
   <!-- Replace G-XXXXXXXXXX with your GA4 Measurement ID -->
@@ -24,13 +25,14 @@
   </script>
 </head>
 <body>
+  <script src="js/age-gate.js"></script>
 
   <!-- Navigation -->
   <nav class="site-nav" aria-label="Main navigation">
     <div class="nav-inner">
       <div class="logo">
         <a href="#home">
-          <img src="Log Mark.png" alt="BLOM" class="nav-logo" width="240" height="64">
+          <img src="assets/BlomIncNoBG.png" alt="BLOM" class="nav-logo" width="240" height="64">
         </a>
       </div>
       <button class="hamburger" id="hamburger" type="button" aria-label="Toggle menu" aria-expanded="false">
@@ -54,7 +56,10 @@
     </div>
     <div class="hero-content">
       <p class="hero-tagline">Grow with Us.</p>
-      <a href="#updates" class="btn-primary">Get updates</a>
+      <div class="hero-actions">
+        <a href="#updates" class="btn-primary">Get updates</a>
+        <a href="play.html" class="btn-secondary">Play</a>
+      </div>
     </div>
   </section>
 
@@ -201,6 +206,7 @@
 
   <button id="scrollTopBtn" type="button" title="Back to top" aria-label="Back to top">&#8679;</button>
 
+  <script src="js/webgl-utils.js"></script>
   <script src="js/main.js"></script>
   <script src="js/simulation.js"></script>
 

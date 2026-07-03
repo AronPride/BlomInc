@@ -1,10 +1,10 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!--Generator: Xara Designer (www.xara.com), SVG filter version: 6.7.0.0-->
-<svg fill="none" fill-rule="evenodd" stroke="black" stroke-width="0.501" stroke-linejoin="bevel" stroke-miterlimit="10" font-family="Times New Roman" font-size="16" style="font-variant-ligatures:none" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" version="1.1" overflow="visible" width="749.996pt" height="183.786pt" viewBox="-62.102 -521.415 749.996 183.786">
+<svg fill="none" fill-rule="evenodd" stroke="black" stroke-width="0.501" stroke-linejoin="bevel" stroke-miterlimit="10" font-family="Times New Roman" font-size="16" style="font-variant-ligatures:none" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" version="1.1" overflow="visible" width="750" height="184" viewBox="0 -521.415 749.996 183.786">
  <defs>
 	</defs>
- <g id="Layer 1" transform="scale(1 -1)">
+ <g id="Layer 1" transform="translate(62.102, 0) scale(1 -1)">
   <path d="M 184.649,342.436 L 184.361,342.507 L 85.128,342.469 L 85.128,521.415 L 122.439,521.415 L 122.434,379.772 L 184.361,379.689 L 184.649,379.784 C 194.953,379.784 203.324,371.412 203.324,361.11 C 203.324,350.799 194.953,342.436 184.649,342.436 Z" stroke="none" fill="#dd6096" stroke-linejoin="miter" stroke-width="2.063" marker-start="none" marker-end="none"/>
   <path d="M 249.031,364.535 C 213.16,400.409 213.16,458.635 249.031,494.51 C 284.905,530.381 343.135,530.381 379.01,494.51 C 414.885,458.635 414.885,400.409 379.01,364.535 C 343.135,328.66 284.905,328.66 249.031,364.535 Z M 352.625,390.916 C 373.927,412.219 373.927,446.826 352.625,468.129 C 331.326,489.431 296.719,489.431 275.416,468.129 C 254.114,446.826 254.114,412.219 275.416,390.916 C 296.719,369.614 331.326,369.614 352.625,390.916 Z" stroke="none" fill="#dd6096" stroke-linejoin="miter" stroke-width="2.063" marker-start="none" marker-end="none"/>
   <path d="M 433.691,339.779 L 465.701,521.382 L 511.136,521.382 L 564.781,388.601 L 618.425,521.382 L 618.447,521.382 L 618.488,521.362 L 618.488,521.382 L 655.874,521.382 L 687.894,339.779 L 650.513,339.779 L 630.453,453.519 L 584.498,339.779 L 545.055,339.779 L 545.059,339.791 L 499.104,453.535 L 479.052,339.779 L 433.691,339.779 Z" stroke="none" fill="#dd6096" stroke-linejoin="miter" stroke-width="2.063" marker-start="none" marker-end="none"/>
