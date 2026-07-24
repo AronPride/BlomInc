@@ -98,7 +98,7 @@ const vec3 fgColor = vec3(0.867, 0.376, 0.588);
 
 void main() {
   vec2 val = texture(tex, v_uv).rg;
-  float intensity = clamp(val.r - 1.65 * val.g, 0.0, 1.0);
+  float intensity = clamp((val.r - 1.70 * val.g) * 2.0, 0.0, 1.0);
   fragColor = vec4(mix(fgColor, bgColor, intensity), 1.0);
 }`;
 
