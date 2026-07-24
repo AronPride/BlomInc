@@ -351,10 +351,10 @@ uniform float faceHighlight;
 
 void main() {
   vec2 val = texture(tex, v_uv).rg;
-  float intensity = val.r - 1.65 * val.g;
+  float intensity = (val.r - 1.70 * val.g) * 2.0;
   vec3 color_low = vec3(1.0, 0.968, 1.0);
   vec3 color_high = vec3(1.0, 0.2, 0.55);
-  float curved = pow(max(intensity, 0.0), 0.82);
+  float curved = pow(clamp(intensity, 0.0, 1.0), 0.82);
   vec3 col = mix(color_high, color_low, curved);
   float mask = texture(faceMask, v_uv).r;
   col = mix(col, min(col * 1.2, vec3(1.0)), mask * faceHighlight);
